@@ -96,13 +96,23 @@ class Skrop(toga.App):
     
         self.write_data()
 
+    # def open_data(self):
+    #     try:
+    #         with open(self.paths.data / "tasks.csv", "r", newline='') as file:
+    #             csv.DictReader.
+        
+    #     else:
+    
+
+    
     def write_data(self):
         self.paths.data.mkdir(exist_ok=True)
-        with open(self.paths.data / "tasks.csv", "w", newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['task', 'frequency', 'start'])
+        with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
+            fieldnames = ['task', 'frequency', 'begin']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+            writer.writeheader()
             for row in self.table.data:
-                writer.writerow([row.task, row.frequency, row.begin])
+                writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
 
 
 def main():
