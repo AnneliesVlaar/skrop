@@ -60,6 +60,11 @@ class Skrop(toga.App):
         main_box.add(task_label)
         main_box.add(self.task_details)
 
+        main_box.add(toga.Divider())
+        overview_label = toga.Label("Overview tasks:", style=Pack(padding=(5, 5)))
+        main_box.add(overview_label)
+        main_box.add(self.table)
+
     def open_data(self):
         try:
             self.paths.data.mkdir(exist_ok=True)
