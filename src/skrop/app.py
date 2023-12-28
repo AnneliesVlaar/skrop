@@ -110,10 +110,10 @@ class Skrop(toga.App):
         self.task_details = toga.DetailedList( 
             data=[],
         )
-
+        self.determine_tasks()
 
     def determine_tasks(self):
-        self.task_details.clear()
+        self.task_details.data.clear()
         for row in self.data:
             if self.check_task(row["begin"], row["frequency"]):
                 self.task_details.data.append({"title": row["task"]})
