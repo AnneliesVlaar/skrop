@@ -6,7 +6,7 @@ from toga.style import Pack
 from toga.style.pack import COLUMN, ROW
 
 import datetime
-
+import csv
 
 def get_week_number():
     week_number = datetime.date.today().isocalendar()[1]
@@ -24,7 +24,7 @@ def delete_detail(widget):
 
 def Task_frequency():
     table = toga.Table(
-        headings=["Task", "Frequency", "start_week"],
+        headings=["Task", "Frequency", "Begin"],
         data = [
         {"task": "Wasmachine 90 graden", "frequency": 8, "begin": 0},
         {"task": "molton hoeslaken wassen (60 graden)", "frequency": 6, "begin": 3},
@@ -87,12 +87,22 @@ class Skrop(toga.App):
 
         main_box.add(date_box)
 
-        table = Task_frequency()
+        self.table = Task_frequency()
 
         task_details = Task_table()
         
-        main_box.add(table)
+        main_box.add(self.table)
         main_box.add(task_details)
+    
+        self.write_data()
+
+    def write_data(self):
+        self.paths.data.mkdir(exist_ok=True)
+        with open(self.paths.data / "tasks.csv", "w", newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['task', 'frequency', 'start'])
+            for row in self.table.data:
+                writer.writerow([row.task, row.frequency, row.begin])
 
 
 def main():
