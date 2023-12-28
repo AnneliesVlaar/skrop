@@ -65,6 +65,23 @@ class Skrop(toga.App):
         main_box.add(overview_label)
         main_box.add(self.table)
 
+        add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
+        self.task = toga.TextInput(style=Pack(flex=1), placeholder="Task details")
+        add_task_box.add(self.task)
+        self.frequency = toga.NumberInput(style=Pack(flex=1), step=1, min=1)
+        add_task_box.add(self.frequency)
+        self.begin = toga.NumberInput(style=Pack(flex=1), step=1, min=0)
+        add_task_box.add(self.begin)
+
+        main_box.add(add_task_box)
+        
+        add_task_button = toga.Button(
+            "Add task",
+            on_press=self.add_task,
+            style=Pack(padding=5)
+        )
+        main_box.add(add_task_button)
+
     def open_data(self):
         try:
             self.paths.data.mkdir(exist_ok=True)
@@ -102,6 +119,7 @@ class Skrop(toga.App):
                 data=tasks, 
                 on_primary_action=delete_detail
             )
+        print(self.task_details.data.append())
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
@@ -110,6 +128,13 @@ class Skrop(toga.App):
             writer.writeheader()
             for row in self.table.data:
                 writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
+        self.determine_tasks()
+
+    def add_task(self, widget):
+        self.table.data.append((self.task.value,self.frequency.value,self.begin.value))
+        self.write_data()
+
+
 
 
 def main():
