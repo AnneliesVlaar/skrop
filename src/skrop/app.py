@@ -3,7 +3,7 @@ Schematische Kunst van het Regelmatig Opgewekt Poetsen
 """
 import toga
 from toga.style import Pack
-from toga.style.pack import COLUMN, ROW
+from toga.style.pack import COLUMN, ROW, LEFT, RIGHT, BOTTOM, TOP, CENTER
 
 import datetime
 import csv
@@ -48,17 +48,23 @@ class Skrop(toga.App):
         self.open_data()
         self.initalize_tasks()
 
-        main_box.add(toga.Divider())
+        task_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=2))
+        task_box.add(toga.Divider())
         task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5)))
-        main_box.add(task_label)
-        main_box.add(self.task_details)
+        task_box.add(task_label)
+        self.task_details.style = Pack(height=250)
+        task_box.add(self.task_details)
+        main_box.add(task_box)
 
-        main_box.add(toga.Divider())
+        table_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1, alignment=BOTTOM))
+        table_box.add(toga.Divider())
         overview_label = toga.Label("Overview tasks:", style=Pack(padding=(5, 5)))
-        main_box.add(overview_label)
-        main_box.add(self.table)
+        table_box.add(overview_label)
+        self.table.style = Pack(height=150)
+        table_box.add(self.table)
+        main_box.add(table_box)
 
-        add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
+        add_task_box = toga.Box(style=Pack(direction=ROW, padding=5, alignment=BOTTOM))
         self.task = toga.TextInput(style=Pack(flex=1), placeholder="Task details")
         add_task_box.add(self.task)
         self.frequency = toga.NumberInput(style=Pack(flex=1), step=1, min=1)
