@@ -47,13 +47,17 @@ class Skrop(toga.App):
         date_label = toga.Label(f"Today is: {today}.", style=Pack(padding=(5, 5)))
 
         date_box.add(week_label)
+        date_box.add(toga.Divider())
         date_box.add(date_label)
 
         main_box.add(date_box)
-    
+
         self.open_data()
         self.determine_tasks()
 
+        main_box.add(toga.Divider())
+        task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5)))
+        main_box.add(task_label)
         main_box.add(self.task_details)
 
     def open_data(self):
@@ -88,8 +92,6 @@ class Skrop(toga.App):
             for moment in range(int(row["begin"]), 53, int(row["frequency"])):
                 if moment == self.week_number:
                     tasks.append({"title": row["task"]})
-
-        print(tasks)
         
         self.task_details = toga.DetailedList(
                 data=tasks, 
