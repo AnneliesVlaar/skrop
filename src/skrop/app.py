@@ -22,19 +22,6 @@ def delete_detail(widget):
     print("hiep")
 
 
-def Task_frequency():
-    table = toga.Table(
-        headings=["Task", "Frequency", "Begin"],
-        data = [
-        {"task": "Wasmachine 90 graden", "frequency": 8, "begin": 0},
-        {"task": "molton hoeslaken wassen (60 graden)", "frequency": 6, "begin": 3},
-        {"task": "Matrassen draaien (z-as)", "frequency": 12, "begin": 3},
-        {"task": "Matrassen keren (y-as)", "frequency": 12, "begin": 9},
-    ],
-    )
-    return table
-
-
 def Task_table():
     data = [
         {"task": "Wasmachine 90 graden", "frequency": 8, "begin": 0},
@@ -87,26 +74,44 @@ class Skrop(toga.App):
 
         main_box.add(date_box)
 
-        self.table = Task_frequency()
-
         task_details = Task_table()
         
-        main_box.add(self.table)
+        # main_box.add(self.table)
         main_box.add(task_details)
     
-        self.write_data()
+        self.open_data()
 
-    # def open_data(self):
-    #     try:
-    #         with open(self.paths.data / "tasks.csv", "r", newline='') as file:
-    #             csv.DictReader.
-        
-    #     else:
+    def open_data(self):
+        try:
+            self.paths.data.mkdir(exist_ok=True)
+        except FileNotFoundError:
+            print(f"Path: {self.paths.data} can't be created.")
+        try:
+            with open(self.paths.data / "tasks.csv", newline='') as csvfile:
+                reader = csv.DictReader(csvfile)
+                headings = reader.fieldnames
+                data = []
+                for row in reader:
+                    data.append(row)
+        except FileNotFoundError:
+            print(f"file not found at {self.paths.data}, creating new file...")
+            # Create empty data file
+            with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
+                headings = ['task', 'frequency', 'begin']
+                data = []
+                writer = csv.DictWriter(csvfile, fieldnames=headings)
+                writer.writeheader()
+
+        # create Toga table from csv data file  
+        self.table = toga.Table(
+            headings=headings,
+            data = data,)
+        for i in self.table.data:
+            print(i)
     
 
     
     def write_data(self):
-        self.paths.data.mkdir(exist_ok=True)
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
             fieldnames = ['task', 'frequency', 'begin']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
