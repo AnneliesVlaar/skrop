@@ -12,11 +12,9 @@ def get_week_number():
     week_number = datetime.date.today().isocalendar()[1]
     return week_number
 
-
 def get_today():
     today = datetime.date.today()
     return today.strftime('%d %B %Y')
-
 
 def delete_detail(widget):
     print("Deleted task from task table")
@@ -38,7 +36,6 @@ class Skrop(toga.App):
         self.main_window.show()
 
         date_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
-
         self.week_number = get_week_number()
         week_label = toga.Label(
             f"This is week: {self.week_number}.", style=Pack(padding=(5, 5))
@@ -53,12 +50,12 @@ class Skrop(toga.App):
         main_box.add(date_box)
 
         self.open_data()
-        self.determine_tasks()
+        # self.determine_tasks()
 
         main_box.add(toga.Divider())
         task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5)))
         main_box.add(task_label)
-        main_box.add(self.task_details)
+        # main_box.add(self.task_details)
 
         main_box.add(toga.Divider())
         overview_label = toga.Label("Overview tasks:", style=Pack(padding=(5, 5)))
@@ -106,16 +103,17 @@ class Skrop(toga.App):
         # create Toga table from csv data file  
         self.table = toga.Table(
             headings=headings,
-            data = self.data,)  
+            data = self.data,
+            on_activate=self.confirm_delete_row,)  
 
     def determine_tasks(self):
         self.task_details = toga.DetailedList( 
-                on_primary_action=delete_detail
-            )
+            on_primary_action=delete_detail
+        )
+        self.task_details.clear()
         for row in self.data:
-            for moment in range(int(row["begin"]), 53, int(row["frequency"])):
-                if moment == self.week_number:
-                    self.task_details.data.append({"title": row["task"]})
+            if self.check_task(row["begin"], row["frequency"]):
+                self.task_details.data.append({"title": row["task"]})
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
@@ -124,16 +122,26 @@ class Skrop(toga.App):
             writer.writeheader()
             for row in self.table.data:
                 writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
+        # self.determine_tasks()
 
     def add_task(self, widget):
         self.table.data.append((self.task.value,self.frequency.value,self.begin.value))
-        for moment in range(int(self.begin.value), 53, int(self.frequency.value)):
-            if moment == self.week_number:
-                self.task_details.data.append({"title": self.task.value})
         self.write_data()
 
+    def confirm_delete_row(self, widget, row):
+        self.main_window.confirm_dialog("Delete task?", f"Are you sure you want to delete: '{row.task}'?", on_result=self.delete_row)
 
+    def delete_row(self, widget, result):
+        if result:
+            self.table.data.remove(self.table.selection)
+            self.write_data()
 
+    def check_task(self, begin, frequency):
+        is_week_task = False
+        for moment in range(int(begin), 53, int(frequency)):
+            if moment == self.week_number:
+                is_week_task = True
+        return is_week_task
 
 def main():
     return Skrop()
