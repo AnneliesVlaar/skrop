@@ -109,17 +109,13 @@ class Skrop(toga.App):
             data = self.data,)  
 
     def determine_tasks(self):
-        tasks = []
+        self.task_details = toga.DetailedList( 
+                on_primary_action=delete_detail
+            )
         for row in self.data:
             for moment in range(int(row["begin"]), 53, int(row["frequency"])):
                 if moment == self.week_number:
-                    tasks.append({"title": row["task"]})
-        
-        self.task_details = toga.DetailedList(
-                data=tasks, 
-                on_primary_action=delete_detail
-            )
-        print(self.task_details.data.append())
+                    self.task_details.data.append({"title": row["task"]})
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
@@ -128,10 +124,12 @@ class Skrop(toga.App):
             writer.writeheader()
             for row in self.table.data:
                 writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
-        self.determine_tasks()
 
     def add_task(self, widget):
         self.table.data.append((self.task.value,self.frequency.value,self.begin.value))
+        for moment in range(int(self.begin.value), 53, int(self.frequency.value)):
+            if moment == self.week_number:
+                self.task_details.data.append({"title": self.task.value})
         self.write_data()
 
 
