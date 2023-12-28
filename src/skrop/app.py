@@ -15,7 +15,7 @@ def get_week_number():
 
 def get_today():
     today = datetime.date.today()
-    return today
+    return today.strftime('%d %B %Y')
 
 
 def delete_detail(widget):
