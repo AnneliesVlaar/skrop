@@ -16,10 +16,6 @@ def get_today():
     today = datetime.date.today()
     return today.strftime('%d %B %Y')
 
-def delete_detail(widget):
-    print("Deleted task from task table")
-
-
 class Skrop(toga.App):
     def startup(self):
         """
@@ -108,15 +104,18 @@ class Skrop(toga.App):
 
     def initalize_tasks(self):
         self.task_details = toga.DetailedList( 
-            data=[],
+            data=[], on_primary_action=self.delete_tasks
         )
         self.determine_tasks()
 
     def determine_tasks(self):
         self.task_details.data.clear()
-        for row in self.data:
-            if self.check_task(row["begin"], row["frequency"]):
-                self.task_details.data.append({"title": row["task"]})
+        for row in self.table.data:
+            if self.check_task(row.begin, row.frequency):
+                self.task_details.data.append({"title": row.task})
+
+    def delete_tasks(self):
+        self.task_details.data.remove(self.task_details.selection)
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
@@ -125,7 +124,7 @@ class Skrop(toga.App):
             writer.writeheader()
             for row in self.table.data:
                 writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
-        # self.determine_tasks()
+        self.determine_tasks()
 
     def add_task(self, widget):
         self.table.data.append((self.task.value,self.frequency.value,self.begin.value))
