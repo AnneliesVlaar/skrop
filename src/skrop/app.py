@@ -50,12 +50,12 @@ class Skrop(toga.App):
         main_box.add(date_box)
 
         self.open_data()
-        # self.determine_tasks()
+        self.initalize_tasks()
 
         main_box.add(toga.Divider())
         task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5)))
         main_box.add(task_label)
-        # main_box.add(self.task_details)
+        main_box.add(self.task_details)
 
         main_box.add(toga.Divider())
         overview_label = toga.Label("Overview tasks:", style=Pack(padding=(5, 5)))
@@ -106,10 +106,13 @@ class Skrop(toga.App):
             data = self.data,
             on_activate=self.confirm_delete_row,)  
 
-    def determine_tasks(self):
+    def initalize_tasks(self):
         self.task_details = toga.DetailedList( 
-            on_primary_action=delete_detail
+            data=[],
         )
+
+
+    def determine_tasks(self):
         self.task_details.clear()
         for row in self.data:
             if self.check_task(row["begin"], row["frequency"]):
