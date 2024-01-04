@@ -146,8 +146,8 @@ class Skrop(toga.App):
             on_activate=self.confirm_delete_row,)  
 
     def initalize_tasks(self):
-        self.task_details = toga.DetailedList( 
-            data=[], on_primary_action=self.delete_tasks
+        self.task_details = toga.DetailedList(
+            data=[], primary_action='Mark as done', on_primary_action=self.mark_task_done
         )
         self.determine_tasks()
 
@@ -157,8 +157,9 @@ class Skrop(toga.App):
             if self.check_task(row.begin, row.frequency):
                 self.task_details.data.append({"title": row.task})
 
-    def delete_tasks(self):
-        self.task_details.data.remove(self.task_details.selection)
+    def mark_task_done(self):
+        self.task_details.selection
+        self.task_details.selection.subtitle = "Done"
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
