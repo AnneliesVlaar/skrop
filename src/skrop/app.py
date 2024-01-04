@@ -32,14 +32,19 @@ class Skrop(toga.App):
         self.main_window.show()
 
         date_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
-        self.week_number = get_week_number()
+        self.this_week_number = get_week_number()
+        self.week_scroller = toga.NumberInput(style=Pack(flex=1), step=1, min=0, max=52)
+        print(type(self.this_week_number))
+        self.week_scroller.value = self.this_week_number
+        week_box = toga.Box(style=Pack(direction=ROW, padding=5))
         week_label = toga.Label(
-            f"This is week: {self.week_number}.", style=Pack(padding=(5, 5))
+            "This is week: ", style=Pack(padding=(5, 5))
         )
+        week_box.add(week_label, self.week_scroller)
         today = get_today()
         date_label = toga.Label(f"Today is: {today}.", style=Pack(padding=(5, 5)))
 
-        date_box.add(week_label)
+        date_box.add(week_box)
         date_box.add(toga.Divider())
         date_box.add(date_label)
 
@@ -147,7 +152,7 @@ class Skrop(toga.App):
     def check_task(self, begin, frequency):
         is_week_task = False
         for moment in range(int(begin), 53, int(frequency)):
-            if moment == self.week_number:
+            if moment == self.this_week_number:
                 is_week_task = True
         return is_week_task
 
