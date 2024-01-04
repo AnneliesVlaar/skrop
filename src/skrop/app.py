@@ -9,6 +9,7 @@ import datetime
 import csv
 
 FIELDNAMES = ['task', 'frequency', 'begin']
+FONTSIZE = 16
 
 def get_week_number():
     week_number = datetime.date.today().isocalendar()[1]
@@ -36,23 +37,23 @@ class Skrop(toga.App):
 
         # Week number
         self.this_week_number = get_week_number()
-        self.week_scroller = toga.NumberInput(style=Pack(flex=1, padding=5, width=50), step=1, min=0, max=52)
+        self.week_scroller = toga.NumberInput(style=Pack(flex=1, padding=5, width=50, font_size=FONTSIZE), step=1, min=0, max=52)
         self.week_scroller.value = self.this_week_number
         self.week_scroller.on_change = self.week_scroller_handler
         this_week_button = toga.Button(
             "Back to this week",
             on_press=self.this_week_handler,
-            style=Pack(padding=5, flex=4)
+            style=Pack(padding=5, flex=4, font_size=FONTSIZE)
         )
         week_box = toga.Box(style=Pack(direction=ROW, flex=1))
         week_label = toga.Label(
-            "Tasks of week: ", style=Pack(padding=(5, 5), flex=1)
+            "Tasks of week: ", style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE)
         )
         week_box.add(week_label, self.week_scroller, this_week_button)
 
         # Today
         today = get_today()
-        date_label = toga.Label(today, style=Pack(padding=(5, 5), flex=1))
+        date_label = toga.Label(today, style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE))
 
         # Date box
         date_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
@@ -73,7 +74,7 @@ class Skrop(toga.App):
         overview_task_button = toga.Button(
             "See all tasks",
             on_press=self.overview_tasks_handler,
-            style=Pack(padding=5, flex=1)
+            style=Pack(padding=5, flex=1, font_size=FONTSIZE)
         )
         self.main_box.add(overview_task_button)
 
@@ -88,19 +89,19 @@ class Skrop(toga.App):
         add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
 
         task_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
-        add_task_label = toga.Label("Task", style=Pack(padding=(5, 5), flex=1))
+        add_task_label = toga.Label("Task", style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE))
         self.task = toga.TextInput(style=Pack(flex=1), placeholder="Task details")
         task_label_box.add(add_task_label, self.task)
         add_task_box.add(task_label_box)
 
         freqency_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
-        add_frequency_label = toga.Label("Frequency", style=Pack(padding=(5, 5), flex=1))
+        add_frequency_label = toga.Label("Frequency", style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE))
         self.frequency = toga.NumberInput(style=Pack(flex=1), step=1, min=1)
         freqency_label_box.add(add_frequency_label, self.frequency)
         add_task_box.add(freqency_label_box)
         
         begin_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
-        add_begin_label = toga.Label("Begin week", style=Pack(padding=(5, 5), flex=1))
+        add_begin_label = toga.Label("Begin week", style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE))
         self.begin = toga.NumberInput(style=Pack(flex=1), step=1, min=0)
         begin_label_box.add(add_begin_label, self.begin)
         add_task_box.add(begin_label_box)
@@ -110,7 +111,7 @@ class Skrop(toga.App):
         add_task_button = toga.Button(
             "Add task",
             on_press=self.add_task,
-            style=Pack(padding=5)
+            style=Pack(padding=5, font_size=FONTSIZE)
         )
         self.task_overview_box.add(add_task_button)
 
