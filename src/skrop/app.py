@@ -41,13 +41,13 @@ class Skrop(toga.App):
         self.week_scroller.value = self.this_week_number
         self.week_scroller.on_change = self.week_scroller_handler
         this_week_button = toga.Button(
-            "Back to this week",
+            "This week",
             on_press=self.this_week_handler,
-            style=Pack(padding=5, flex=4, font_size=FONTSIZE)
+            style=Pack(padding=5, flex=1, font_size=FONTSIZE)
         )
         week_box = toga.Box(style=Pack(direction=ROW, flex=1))
         week_label = toga.Label(
-            "Tasks of week: ", style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE)
+            "Tasks of week: ", style=Pack(padding=(15, 5, 5), flex=1, font_size=FONTSIZE)
         )
         week_box.add(week_label, self.week_scroller, this_week_button)
 
