@@ -88,14 +88,25 @@ class Skrop(toga.App):
         self.table.style = Pack(flex=1)
         table_box.add(self.table)
         self.task_overview_box.add(table_box)
-
         add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
+
+        task_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
+        add_task_label = toga.Label("Task", style=Pack(padding=(5, 5), flex=1))
         self.task = toga.TextInput(style=Pack(flex=1), placeholder="Task details")
-        add_task_box.add(self.task)
+        task_label_box.add(add_task_label, self.task)
+        add_task_box.add(task_label_box)
+
+        freqency_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
+        add_frequency_label = toga.Label("Frequency", style=Pack(padding=(5, 5), flex=1))
         self.frequency = toga.NumberInput(style=Pack(flex=1), step=1, min=1)
-        add_task_box.add(self.frequency)
+        freqency_label_box.add(add_frequency_label, self.frequency)
+        add_task_box.add(freqency_label_box)
+        
+        begin_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
+        add_begin_label = toga.Label("Begin week", style=Pack(padding=(5, 5), flex=1))
         self.begin = toga.NumberInput(style=Pack(flex=1), step=1, min=0)
-        add_task_box.add(self.begin)
+        begin_label_box.add(add_begin_label, self.begin)
+        add_task_box.add(begin_label_box)
 
         self.task_overview_box.add(add_task_box)
         
