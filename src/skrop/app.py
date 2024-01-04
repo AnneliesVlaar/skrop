@@ -71,8 +71,15 @@ class Skrop(toga.App):
         task_box.add(self.task_details)
         main_box.add(task_box)
 
+        overview_task_button = toga.Button(
+            "See all tasks",
+            on_press=self.overview_tasks_handler,
+            style=Pack(padding=5)
+        )
+        main_box.add(overview_task_button)
+
         # Task overview
-        task_overview_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        self.task_overview_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
 
         table_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
         table_box.add(toga.Divider())
@@ -80,7 +87,7 @@ class Skrop(toga.App):
         table_box.add(overview_label)
         self.table.style = Pack(height=150)
         table_box.add(self.table)
-        task_overview_box.add(table_box)
+        self.task_overview_box.add(table_box)
 
         add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
         self.task = toga.TextInput(style=Pack(flex=1), placeholder="Task details")
@@ -90,14 +97,14 @@ class Skrop(toga.App):
         self.begin = toga.NumberInput(style=Pack(flex=1), step=1, min=0)
         add_task_box.add(self.begin)
 
-        task_overview_box.add(add_task_box)
+        self.task_overview_box.add(add_task_box)
         
         add_task_button = toga.Button(
             "Add task",
             on_press=self.add_task,
             style=Pack(padding=5)
         )
-        task_overview_box.add(add_task_button)
+        self.task_overview_box.add(add_task_button)
 
     def open_data(self):
         try:
@@ -174,6 +181,9 @@ class Skrop(toga.App):
 
     def this_week_handler(self, widget):
         self.week_scroller.value = self.this_week_number
+
+    def overview_tasks_handler(self, widget):
+        self.main_window.content = self.task_overview_box
 
 def main():
     return Skrop()
