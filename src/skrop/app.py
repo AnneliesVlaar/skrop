@@ -11,6 +11,7 @@ import csv
 FIELDNAMES = ["task", "frequency", "begin"]
 FONTSIZE = 16
 
+
 def get_week_number():
     """Get current week number
 
@@ -44,31 +45,28 @@ class Skrop(toga.App):
 
         self.open_data()
         self.initalize_tasks()
-    
+
         self.create_task_box()
         self.create_overview_button()
 
         self.create_task_overview_box()
 
     def create_main_window(self):
-        """Set main_box as main window
-        """
+        """Set main_box as main window"""
         self.main_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
         self.main_window = toga.MainWindow(title=self.formal_name)
         self.main_window.content = self.main_box
         self.main_window.show()
 
     def create_today_box(self):
-        """Create label with today's date
-        """
+        """Create label with today's date"""
         today = get_today()
         self.date_label = toga.Label(
             today, style=Pack(padding=(5, 5), flex=1, font_size=FONTSIZE)
         )
 
     def create_week_box(self):
-        """Show the weeknumber and create button to go to current week
-        """
+        """Show the weeknumber and create button to go to current week"""
         week_label = toga.Label(
             "Tasks of week: ",
             style=Pack(padding=(15, 5, 5), flex=1, font_size=FONTSIZE),
@@ -80,7 +78,7 @@ class Skrop(toga.App):
             min=0,
             max=52,
             value=self.this_week_number,
-            on_change=self.week_scroller_handler
+            on_change=self.week_scroller_handler,
         )
         this_week_button = toga.Button(
             "This week",
@@ -91,8 +89,7 @@ class Skrop(toga.App):
         self.week_box.add(week_label, self.week_scroller, this_week_button)
 
     def create_date_box(self):
-        """Layout today label and week box in main box
-        """
+        """Layout today label and week box in main box"""
         date_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
         date_box.add(self.date_label)
         date_box.add(toga.Divider())
@@ -101,16 +98,14 @@ class Skrop(toga.App):
         self.main_box.add(date_box)
 
     def create_task_box(self):
-        """Show the task of the week in detailed list
-        """           
+        """Show the task of the week in detailed list"""
         task_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
 
         task_box.add(toga.Divider(), self.task_details)
         self.main_box.add(task_box)
 
     def create_overview_button(self):
-        """Button to go to the whole list of takst
-        """
+        """Button to go to the whole list of takst"""
         overview_task_button = toga.Button(
             "See all tasks",
             on_press=self.overview_tasks_handler,
@@ -119,8 +114,7 @@ class Skrop(toga.App):
         self.main_box.add(overview_task_button)
 
     def create_task_overview_box(self):
-        """Box to show all the tasks and add task functionallity
-        """
+        """Box to show all the tasks and add task functionallity"""
         self.task_overview_box = toga.Box(
             style=Pack(direction=COLUMN, padding=5, flex=1)
         )
@@ -133,7 +127,7 @@ class Skrop(toga.App):
     def create_add_task_box(self):
         """Layout labels above input to create add task functionallity.
 
-        Labels and input for task, frequency and begin week are constructed. 
+        Labels and input for task, frequency and begin week are constructed.
         """
         # task
         task_label_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
@@ -165,8 +159,7 @@ class Skrop(toga.App):
         self.task_overview_box.add(add_task_box)
 
     def create_add_task_button(self):
-        """Add task button to box
-        """
+        """Add task button to box"""
         add_task_button = toga.Button(
             "Add task",
             on_press=self.add_task,
@@ -175,8 +168,7 @@ class Skrop(toga.App):
         self.task_overview_box.add(add_task_button)
 
     def create_back_home_button(self):
-        """Add button to show homepage to box
-        """
+        """Add button to show homepage to box"""
         back_home_button = toga.Button(
             "Show this week tasks",
             on_press=self.back_to_homepage,
@@ -188,8 +180,8 @@ class Skrop(toga.App):
     def open_data(self):
         """Open data with tasks from file
 
-        File has name tasks.csv and contains heading see FIELDNAMES. 
-        Content of the file is added as data to a table. 
+        File has name tasks.csv and contains heading see FIELDNAMES.
+        Content of the file is added as data to a table.
         """
         try:
             self.paths.data.mkdir(exist_ok=True)
@@ -216,23 +208,21 @@ class Skrop(toga.App):
             headings=FIELDNAMES,
             data=self.data,
             on_activate=self.confirm_delete_row,
-            style=Pack(flex=1)
+            style=Pack(flex=1),
         )
 
     def initalize_tasks(self):
-        """Create a DetailedList to show tasks of this week
-        """
+        """Create a DetailedList to show tasks of this week"""
         self.task_details = toga.DetailedList(
             data=[],
             primary_action="Mark as done",
             on_primary_action=self.mark_task_done,
-            style=Pack(flex=1)
+            style=Pack(flex=1),
         )
         self.determine_tasks()
 
     def determine_tasks(self):
-        """Create a list of tasks that should be done in the week shown in the weekbox
-        """
+        """Create a list of tasks that should be done in the week shown in the weekbox"""
         self.task_details.data.clear()
         for row in self.all_tasks.data:
             if self.check_task(row.begin, row.frequency):
@@ -243,13 +233,12 @@ class Skrop(toga.App):
 
         Args:
             widget (): toga widget
-            row (): current selection in the detailedlist 
+            row (): current selection in the detailedlist
         """
         row.title = "Done!"
 
     def write_data(self):
-        """Save all tasks to csv file
-        """
+        """Save all tasks to csv file"""
         with open(self.paths.data / "tasks.csv", "w", newline="") as csvfile:
             fieldnames = FIELDNAMES
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -266,9 +255,10 @@ class Skrop(toga.App):
         Args:
             widget (): toga widget
         """
-        self.all_tasks.data.append(
-            (self.task.value, self.frequency.value, self.begin.value)
-        )
+        if self.task.value and self.frequency.value and self.begin.value:
+            self.all_tasks.data.append(
+                (self.task.value, self.frequency.value, self.begin.value)
+            )
 
         # empty input fields after adding
         self.task.value = None
