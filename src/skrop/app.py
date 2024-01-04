@@ -36,7 +36,7 @@ class Skrop(toga.App):
 
         # Week number
         self.this_week_number = get_week_number()
-        self.week_scroller = toga.NumberInput(style=Pack(flex=1, padding=5), step=1, min=0, max=52)
+        self.week_scroller = toga.NumberInput(style=Pack(flex=1, padding=5, width=50), step=1, min=0, max=52)
         self.week_scroller.value = self.this_week_number
         self.week_scroller.on_change = self.week_scroller_handler
         this_week_button = toga.Button(
@@ -130,7 +130,6 @@ class Skrop(toga.App):
                 self.data = []
                 for row in reader:
                     self.data.append(row)
-                print(self.data)
         except FileNotFoundError:
             print(f"file not found at {self.paths.data}, creating new file...")
             # Create empty data file
@@ -155,7 +154,6 @@ class Skrop(toga.App):
     def determine_tasks(self):
         self.task_details.data.clear()
         for row in self.table.data:
-            print(f"{row} in determine task")
             if self.check_task(row.begin, row.frequency):
                 self.task_details.data.append({"title": row.task})
 
@@ -168,7 +166,6 @@ class Skrop(toga.App):
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for row in self.table.data:
-                print(f"{row} in write data")
                 writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
         self.determine_tasks()
 
