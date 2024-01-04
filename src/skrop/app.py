@@ -45,11 +45,16 @@ class Skrop(toga.App):
             on_press=self.this_week_handler,
             style=Pack(padding=5, flex=1, font_size=FONTSIZE)
         )
+        prev_week_button = toga.Button(
+            "<",
+            on_press=self.this_week_handler,
+            style=Pack(padding=5, flex=1, font_size=FONTSIZE)
+        )
         week_box = toga.Box(style=Pack(direction=ROW, flex=1))
         week_label = toga.Label(
             "Tasks of week: ", style=Pack(padding=(15, 5, 5), flex=1, font_size=FONTSIZE)
         )
-        week_box.add(week_label, self.week_scroller, this_week_button)
+        week_box.add(week_label, self.week_scroller, prev_week_button, this_week_button)
 
         # Today
         today = get_today()
@@ -158,9 +163,8 @@ class Skrop(toga.App):
             if self.check_task(row.begin, row.frequency):
                 self.task_details.data.append({"subtitle": row.task})
 
-    def mark_task_done(self):
-        print(self.task_details.selection)
-        self.task_details.selection.subtitle = "Done"
+    def mark_task_done(self, widget, row):
+        row.title = "Done!"
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
