@@ -63,7 +63,7 @@ class Skrop(toga.App):
         self.open_data()
         self.initalize_tasks()
 
-        task_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=2))
+        task_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
         task_box.add(toga.Divider())
         task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5)))
         task_box.add(task_label)
@@ -71,15 +71,18 @@ class Skrop(toga.App):
         task_box.add(self.task_details)
         main_box.add(task_box)
 
-        table_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1, alignment=BOTTOM))
+        # Task overview
+        task_overview_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+
+        table_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
         table_box.add(toga.Divider())
         overview_label = toga.Label("Overview tasks:", style=Pack(padding=(5, 5)))
         table_box.add(overview_label)
         self.table.style = Pack(height=150)
         table_box.add(self.table)
-        main_box.add(table_box)
+        task_overview_box.add(table_box)
 
-        add_task_box = toga.Box(style=Pack(direction=ROW, padding=5, alignment=BOTTOM))
+        add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
         self.task = toga.TextInput(style=Pack(flex=1), placeholder="Task details")
         add_task_box.add(self.task)
         self.frequency = toga.NumberInput(style=Pack(flex=1), step=1, min=1)
@@ -87,14 +90,14 @@ class Skrop(toga.App):
         self.begin = toga.NumberInput(style=Pack(flex=1), step=1, min=0)
         add_task_box.add(self.begin)
 
-        main_box.add(add_task_box)
+        task_overview_box.add(add_task_box)
         
         add_task_button = toga.Button(
             "Add task",
             on_press=self.add_task,
             style=Pack(padding=5)
         )
-        main_box.add(add_task_button)
+        task_overview_box.add(add_task_button)
 
     def open_data(self):
         try:
