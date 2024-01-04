@@ -10,6 +10,8 @@ import csv
 
 FIELDNAMES = ['task', 'frequency', 'begin']
 FONTSIZE = 16
+WIDTH = 412 
+HEIGHT = 734
 
 def get_week_number():
     week_number = datetime.date.today().isocalendar()[1]
@@ -45,16 +47,11 @@ class Skrop(toga.App):
             on_press=self.this_week_handler,
             style=Pack(padding=5, flex=1, font_size=FONTSIZE)
         )
-        prev_week_button = toga.Button(
-            "<",
-            on_press=self.this_week_handler,
-            style=Pack(padding=5, flex=1, font_size=FONTSIZE)
-        )
         week_box = toga.Box(style=Pack(direction=ROW, flex=1))
         week_label = toga.Label(
             "Tasks of week: ", style=Pack(padding=(15, 5, 5), flex=1, font_size=FONTSIZE)
         )
-        week_box.add(week_label, self.week_scroller, prev_week_button, this_week_button)
+        week_box.add(week_label, self.week_scroller, this_week_button)
 
         # Today
         today = get_today()
@@ -88,7 +85,7 @@ class Skrop(toga.App):
 
         table_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
 
-        self.table.style = Pack(flex=1)
+        self.table.style = Pack(flex=1, width=WIDTH-20)
         table_box.add(self.table)
         self.task_overview_box.add(table_box)
         add_task_box = toga.Box(style=Pack(direction=ROW, padding=5))
@@ -120,9 +117,13 @@ class Skrop(toga.App):
         )
         self.task_overview_box.add(add_task_button)
 
-        back_home = toga.Command(
-        self.back_to_homepage, text="Back home", tooltip="Go back to homepage", order=1, group=toga.Group.HELP)
-        toga.App.app.commands.add(back_home)
+        back_home_button = toga.Button(
+            "Show this week tasks",
+            on_press=self.back_to_homepage,
+            style=Pack(padding=5, font_size=FONTSIZE)
+        )
+
+        self.task_overview_box.add(back_home_button)
         
     def open_data(self):
         try:
