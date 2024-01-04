@@ -8,6 +8,8 @@ from toga.style.pack import COLUMN, ROW, LEFT, RIGHT, BOTTOM, TOP, CENTER
 import datetime
 import csv
 
+FIELDNAMES = ['task', 'frequency', 'begin']
+
 def get_week_number():
     week_number = datetime.date.today().isocalendar()[1]
     return week_number
@@ -25,7 +27,7 @@ class Skrop(toga.App):
         We then create a main window (with a name matching the app), and
         show the main window.
         """
-        self.main_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        self.main_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
 
         # Main window
         self.main_window = toga.MainWindow(title=self.formal_name)
@@ -40,17 +42,17 @@ class Skrop(toga.App):
         this_week_button = toga.Button(
             "Back to this week",
             on_press=self.this_week_handler,
-            style=Pack(padding=5)
+            style=Pack(padding=5, flex=4)
         )
-        week_box = toga.Box(style=Pack(direction=ROW, padding=5))
+        week_box = toga.Box(style=Pack(direction=ROW, flex=1))
         week_label = toga.Label(
-            "This is week: ", style=Pack(padding=(5, 5))
+            "This is week: ", style=Pack(padding=(5, 5), flex=1)
         )
         week_box.add(week_label, self.week_scroller, this_week_button)
 
         # Today
         today = get_today()
-        date_label = toga.Label(f"Today is: {today}.", style=Pack(padding=(5, 5)))
+        date_label = toga.Label(f"Today is: {today}.", style=Pack(padding=(5, 5), flex=1))
 
         # Date box
         date_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
@@ -63,29 +65,27 @@ class Skrop(toga.App):
         self.open_data()
         self.initalize_tasks()
 
-        task_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        task_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
         task_box.add(toga.Divider())
-        task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5)))
+        task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5), flex=1))
         task_box.add(task_label)
-        self.task_details.style = Pack(height=250)
+        self.task_details.style = Pack(flex=1)
         task_box.add(self.task_details)
         self.main_box.add(task_box)
 
         overview_task_button = toga.Button(
             "See all tasks",
             on_press=self.overview_tasks_handler,
-            style=Pack(padding=5)
+            style=Pack(padding=5, flex=1)
         )
         self.main_box.add(overview_task_button)
 
         # Task overview
-        self.task_overview_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        self.task_overview_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
 
-        table_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
-        table_box.add(toga.Divider())
-        overview_label = toga.Label("Overview tasks:", style=Pack(padding=(5, 5)))
-        table_box.add(overview_label)
-        self.table.style = Pack(height=150)
+        table_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
+
+        self.table.style = Pack(flex=1)
         table_box.add(self.table)
         self.task_overview_box.add(table_box)
 
@@ -122,18 +122,19 @@ class Skrop(toga.App):
                 self.data = []
                 for row in reader:
                     self.data.append(row)
+                print(self.data)
         except FileNotFoundError:
             print(f"file not found at {self.paths.data}, creating new file...")
             # Create empty data file
             with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
-                headings = ['task', 'frequency', 'begin']
+                headings = FIELDNAMES
                 self.data = []
                 writer = csv.DictWriter(csvfile, fieldnames=headings)
                 writer.writeheader()
 
         # create Toga table from csv data file  
         self.table = toga.Table(
-            headings=headings,
+            headings=FIELDNAMES,
             data = self.data,
             on_activate=self.confirm_delete_row,)  
 
@@ -146,6 +147,7 @@ class Skrop(toga.App):
     def determine_tasks(self):
         self.task_details.data.clear()
         for row in self.table.data:
+            print(f"{row} in determine task")
             if self.check_task(row.begin, row.frequency):
                 self.task_details.data.append({"title": row.task})
 
@@ -154,15 +156,19 @@ class Skrop(toga.App):
     
     def write_data(self):
         with open(self.paths.data / "tasks.csv", "w", newline='') as csvfile:
-            fieldnames = ['task', 'frequency', 'begin']
+            fieldnames = FIELDNAMES
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
             for row in self.table.data:
+                print(f"{row} in write data")
                 writer.writerow({'task': row.task,'frequency': row.frequency, 'begin': row.begin})
         self.determine_tasks()
 
     def add_task(self, widget):
         self.table.data.append((self.task.value,self.frequency.value,self.begin.value))
+        self.task.value = None
+        self.frequency.value = None
+        self.begin.value = None
         self.write_data()
 
     def confirm_delete_row(self, widget, row):
