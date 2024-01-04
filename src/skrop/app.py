@@ -46,19 +46,19 @@ class Skrop(toga.App):
         )
         week_box = toga.Box(style=Pack(direction=ROW, flex=1))
         week_label = toga.Label(
-            "This is week: ", style=Pack(padding=(5, 5), flex=1)
+            "Tasks of week: ", style=Pack(padding=(5, 5), flex=1)
         )
         week_box.add(week_label, self.week_scroller, this_week_button)
 
         # Today
         today = get_today()
-        date_label = toga.Label(f"Today is: {today}.", style=Pack(padding=(5, 5), flex=1))
+        date_label = toga.Label(today, style=Pack(padding=(5, 5), flex=1))
 
         # Date box
         date_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
-        date_box.add(week_box)
-        date_box.add(toga.Divider())
         date_box.add(date_label)
+        date_box.add(toga.Divider())
+        date_box.add(week_box)
 
         self.main_box.add(date_box)
 
@@ -66,9 +66,6 @@ class Skrop(toga.App):
         self.initalize_tasks()
 
         task_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
-        task_box.add(toga.Divider())
-        task_label = toga.Label("Task of this week:", style=Pack(padding=(5, 5), flex=1))
-        task_box.add(task_label)
         self.task_details.style = Pack(flex=1)
         task_box.add(self.task_details)
         self.main_box.add(task_box)
@@ -177,15 +174,20 @@ class Skrop(toga.App):
 
     def add_task(self, widget):
         self.table.data.append((self.task.value,self.frequency.value,self.begin.value))
+        
+        # empty input fields after adding
         self.task.value = None
         self.frequency.value = None
         self.begin.value = None
+        
+        # save changes
         self.write_data()
 
     def confirm_delete_row(self, widget, row):
         self.main_window.confirm_dialog("Delete task?", f"Are you sure you want to delete: '{row.task}'?", on_result=self.delete_row)
 
     def delete_row(self, widget, result):
+        # remove row if user confirmed
         if result:
             self.table.data.remove(self.table.selection)
             self.write_data()
