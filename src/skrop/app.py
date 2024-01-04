@@ -25,11 +25,11 @@ class Skrop(toga.App):
         We then create a main window (with a name matching the app), and
         show the main window.
         """
-        main_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
+        self.main_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
 
         # Main window
         self.main_window = toga.MainWindow(title=self.formal_name)
-        self.main_window.content = main_box
+        self.main_window.content = self.main_box
         self.main_window.show()
 
         # Week number
@@ -58,7 +58,7 @@ class Skrop(toga.App):
         date_box.add(toga.Divider())
         date_box.add(date_label)
 
-        main_box.add(date_box)
+        self.main_box.add(date_box)
 
         self.open_data()
         self.initalize_tasks()
@@ -69,14 +69,14 @@ class Skrop(toga.App):
         task_box.add(task_label)
         self.task_details.style = Pack(height=250)
         task_box.add(self.task_details)
-        main_box.add(task_box)
+        self.main_box.add(task_box)
 
         overview_task_button = toga.Button(
             "See all tasks",
             on_press=self.overview_tasks_handler,
             style=Pack(padding=5)
         )
-        main_box.add(overview_task_button)
+        self.main_box.add(overview_task_button)
 
         # Task overview
         self.task_overview_box = toga.Box(style=Pack(direction=COLUMN, padding=5))
@@ -106,6 +106,10 @@ class Skrop(toga.App):
         )
         self.task_overview_box.add(add_task_button)
 
+        back_home = toga.Command(
+        self.back_to_homepage, text="Back home", tooltip="Go back to homepage", order=1, group=toga.Group.HELP)
+        toga.App.app.commands.add(back_home)
+        
     def open_data(self):
         try:
             self.paths.data.mkdir(exist_ok=True)
@@ -184,6 +188,9 @@ class Skrop(toga.App):
 
     def overview_tasks_handler(self, widget):
         self.main_window.content = self.task_overview_box
+
+    def back_to_homepage(self, widget):
+        self.main_window.content =  self.main_box
 
 def main():
     return Skrop()
