@@ -68,7 +68,7 @@ class Skrop(toga.App):
 
         task_box = toga.Box(style=Pack(direction=COLUMN, padding=5, flex=1))
         self.task_details.style = Pack(flex=1)
-        task_box.add(self.task_details)
+        task_box.add(toga.Divider(), self.task_details)
         self.main_box.add(task_box)
 
         overview_task_button = toga.Button(
@@ -156,10 +156,10 @@ class Skrop(toga.App):
         self.task_details.data.clear()
         for row in self.table.data:
             if self.check_task(row.begin, row.frequency):
-                self.task_details.data.append({"title": row.task})
+                self.task_details.data.append({"subtitle": row.task})
 
     def mark_task_done(self):
-        self.task_details.selection
+        print(self.task_details.selection)
         self.task_details.selection.subtitle = "Done"
     
     def write_data(self):
