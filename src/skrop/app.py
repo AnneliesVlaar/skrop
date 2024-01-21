@@ -289,8 +289,8 @@ class Skrop(toga.App):
         self.task_details.selection.title = "Done!"
         self.task_details.selection.icon = toga.Icon("resources/skrop")
 
-        # done_task = dict(week=self.this_week_number, task=row.subtitle)
-        done_task = dict(week=self.this_week_number, task=self.task_details.selection.subtitle)
+        # done_task = dict(week=self.week_scroller.value, task=row.subtitle)
+        done_task = dict(week=self.week_scroller.value, task=self.task_details.selection.subtitle)
         self.done.append(done_task)
         self.write_done()
 
@@ -305,8 +305,8 @@ class Skrop(toga.App):
         # row.title = None
         # row.icon = None
         
-        # dict(week=str(self.this_week_number), task=row.subtitle)
-        remove_task = dict(week=str(self.this_week_number), task=self.task_details.selection.subtitle)
+        # dict(week=str(self.self.week_scroller.value), task=row.subtitle)
+        remove_task = dict(week=str(self.self.week_scroller.value), task=self.task_details.selection.subtitle)
         self.done.remove(remove_task)
         self.write_done()
 
