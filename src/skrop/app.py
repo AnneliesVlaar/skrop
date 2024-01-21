@@ -216,7 +216,9 @@ class Skrop(toga.App):
         self.task_details = toga.DetailedList(
             data=[],
             primary_action="Mark as done",
+            secondary_action="Remove done",
             on_primary_action=self.mark_task_done,
+            on_secondary_action=self.remove_done,
             style=Pack(flex=1),
         )
         self.determine_tasks()
@@ -231,11 +233,24 @@ class Skrop(toga.App):
     def mark_task_done(self, widget, row):
         """Handler to add Done! to the title of the detailedlist
 
+        And set icon to Skrop logo.
+    
         Args:
             widget (): toga widget
             row (): current selection in the detailedlist
         """
         row.title = "Done!"
+        row.icon = toga.Icon("resources/skrop")
+
+    def remove_done(sec, widget, row):
+        """Handler to remove Done! and Skrop logo from detailedlist.    
+
+        Args:
+            widget (): toga widget
+            row (): current selection in the detailedlist
+        """
+        row.title = None
+        row.icon = None
 
     def write_data(self):
         """Save all tasks to csv file"""
