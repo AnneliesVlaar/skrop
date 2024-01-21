@@ -2,7 +2,7 @@
 [tool.briefcase]
 project_name = "Skrop"
 bundle = "com.example"
-version = "0.1.5"
+version = "0.2.0"
 url = "https://example.com/skrop"
 license = "MIT license"
 author = "Annelies Vlaar"
