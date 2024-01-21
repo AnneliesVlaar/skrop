@@ -224,7 +224,7 @@ class Skrop(toga.App):
             secondary_action="Remove done",
             on_primary_action=self.mark_task_done,
             on_secondary_action=self.remove_done,
-            on_select=self.remove_done,
+            on_select=self.mark_task_done,
             style=Pack(flex=1),
         )
 
@@ -240,13 +240,17 @@ class Skrop(toga.App):
                 for row in reader:
                     self.done.append(row)
                 
-                # Only store done tasks of current week
-                try:
-                    if self.done[0]['week'] != self.this_week_number:
-                        self.done = []
+            # Only store done tasks of current week
+            try:
+                for (i, task) in enumerate(self.done):
+                    if int(self.done[i]["week"]) != self.this_week_number:
+                        print(f"week is niet deze week {task}")
+                        self.done.remove(task)
                         self.write_done()
-                except IndexError:
-                    pass
+                    else:
+                        pass
+            except IndexError:
+                pass
 
         except FileNotFoundError:
             print(f"file not found at {self.paths.config}, creating new file...")
@@ -313,6 +317,9 @@ class Skrop(toga.App):
             writer.writeheader()
             for row in self.done:
                 writer.writerow(row)
+
+    # def check_done(self):
+
 
     def write_data(self):
         """Save all tasks to csv file"""
