@@ -255,7 +255,7 @@ class Skrop(toga.App):
         Args:
             widget (): toga widget
         """
-        if self.task.value and self.frequency.value and self.begin.value:
+        if self.task.value and self.frequency.value and self.begin.value != None:
             self.all_tasks.data.append(
                 (self.task.value, self.frequency.value, self.begin.value)
             )
