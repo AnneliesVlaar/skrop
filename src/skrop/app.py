@@ -260,7 +260,6 @@ class Skrop(toga.App):
                 self.done = []
                 writer = csv.DictWriter(csvfile, fieldnames=headings)
                 writer.writeheader()
-
         self.determine_tasks()
 
     def determine_tasks(self):
@@ -280,8 +279,13 @@ class Skrop(toga.App):
                         }
                     )
                 else:
-                    self.task_details.data.append({"subtitle": row.task})
-
+                    self.task_details.data.append(
+                        {
+                            "subtitle": row.task,
+                            "title": None,
+                            "icon": None,
+                        }
+                    )
     def mark_task_done(self, widget, row):
         """Handler to add Done! to the title of the detailedlist
 
@@ -292,12 +296,15 @@ class Skrop(toga.App):
             row (): current selection in the detailedlist
         """
 
-        row.title = "Done!"
-        row.icon = toga.Icon("resources/skrop")
+        if row.title == None:
+            row.title = "Done!"
+            row.icon = toga.Icon("resources/skrop")
 
-        done_task = dict(week=self.week_scroller.value, task=row.subtitle)
-        self.done.append(done_task)
-        self.write_done()
+            done_task = dict(week=int(self.week_scroller.value), task=row.subtitle)
+            self.done.append(done_task)
+            self.write_done()
+        else:
+            pass
 
     def remove_done(self, widget, row):
         """Handler to remove Done! and Skrop logo from detailedlist.
@@ -306,12 +313,15 @@ class Skrop(toga.App):
             widget (): toga widget
             row (): current selection in the detailedlist
         """
-        row.title = None
-        row.icon = None
+        if row.title != None:
+            row.title = None
+            row.icon = None
 
-        remove_task = dict(week=str(self.self.week_scroller.value), task=row.subtitle)
-        self.done.remove(remove_task)
-        self.write_done()
+            remove_task = dict(week=int(self.week_scroller.value), task=row.subtitle)
+            self.done.remove(remove_task)
+            self.write_done()
+        else:
+            pass
 
     def write_done(self):
         """Write tasks marked as done to config file.
@@ -331,7 +341,7 @@ class Skrop(toga.App):
         """
         self.tasks_done = []
         for row in self.done:
-            if int(row["week"]) == self.week_scroller.value:
+            if int(row["week"]) == int(self.week_scroller.value):
                 self.tasks_done.append(row["task"])
         return self.tasks_done
 
