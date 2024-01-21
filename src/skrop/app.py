@@ -217,14 +217,15 @@ class Skrop(toga.App):
         )
 
     def initalize_tasks(self):
-        """Create a DetailedList to show tasks of this week"""
+        """Create a DetailedList to show tasks of this week
+        
+        Check for done tasks of current week in config. """
         self.task_details = toga.DetailedList(
             data=[],
             primary_action="Mark as done",
             secondary_action="Remove done",
             on_primary_action=self.mark_task_done,
             on_secondary_action=self.remove_done,
-            on_select=self.mark_task_done,
             style=Pack(flex=1),
         )
 
@@ -263,7 +264,9 @@ class Skrop(toga.App):
         self.determine_tasks()
 
     def determine_tasks(self):
-        """Create a list of tasks that should be done in the week shown in the weekbox"""
+        """Create a list of tasks that should be done in the week shown in the weekbox.
+        
+        Add Done! text to tasks from config file."""
         self.task_details.data.clear()
         self.check_done()
         for row in self.all_tasks.data:
@@ -279,8 +282,7 @@ class Skrop(toga.App):
                 else:
                     self.task_details.data.append({"subtitle": row.task})
 
-    # def mark_task_done(self, widget, row):
-    def mark_task_done(self, widget):
+    def mark_task_done(self, widget, row):
         """Handler to add Done! to the title of the detailedlist
 
         And set icon to Skrop logo.
@@ -290,39 +292,30 @@ class Skrop(toga.App):
             row (): current selection in the detailedlist
         """
 
-        # row.title = "Done!"
-        # row.icon = toga.Icon("resources/skrop")
+        row.title = "Done!"
+        row.icon = toga.Icon("resources/skrop")
 
-        self.task_details.selection.title = "Done!"
-        self.task_details.selection.icon = toga.Icon("resources/skrop")
-
-        # done_task = dict(week=self.week_scroller.value, task=row.subtitle)
-        done_task = dict(
-            week=self.week_scroller.value, task=self.task_details.selection.subtitle
-        )
+        done_task = dict(week=self.week_scroller.value, task=row.subtitle)
         self.done.append(done_task)
         self.write_done()
 
-    # def remove_done(self, widget, row):
-    def remove_done(self, widget):
+    def remove_done(self, widget, row):
         """Handler to remove Done! and Skrop logo from detailedlist.
 
         Args:
             widget (): toga widget
             row (): current selection in the detailedlist
         """
-        # row.title = None
-        # row.icon = None
+        row.title = None
+        row.icon = None
 
-        # dict(week=str(self.self.week_scroller.value), task=row.subtitle)
-        remove_task = dict(
-            week=str(self.week_scroller.value),
-            task=self.task_details.selection.subtitle,
-        )
+        remove_task = dict(week=str(self.self.week_scroller.value), task=row.subtitle)
         self.done.remove(remove_task)
         self.write_done()
 
     def write_done(self):
+        """Write tasks marked as done to config file.
+        """
         with open(self.paths.config / "done.csv", "w", newline="") as csvfile:
             headings = ["week", "task"]
             writer = csv.DictWriter(csvfile, fieldnames=headings)
@@ -331,6 +324,11 @@ class Skrop(toga.App):
                 writer.writerow(row)
 
     def check_done(self):
+        """Create list with done tasks in week shown in weeknumber box.
+
+        Returns:
+            list: tasks that are marked as done in weeknumber box
+        """
         self.tasks_done = []
         for row in self.done:
             if int(row["week"]) == self.week_scroller.value:
