@@ -37,6 +37,11 @@ class Skrop(toga.App):
         """
         Construct and show the Skrop application.
         """
+        # make
+        try:
+            self.paths.app.mkdir(exist_ok=True)
+        except FileNotFoundError:
+            print(f"Path: {self.paths.app} can't be created.")
 
         self.create_main_window()
         self.create_week_box()
@@ -219,8 +224,40 @@ class Skrop(toga.App):
             secondary_action="Remove done",
             on_primary_action=self.mark_task_done,
             on_secondary_action=self.remove_done,
+            on_select=self.remove_done,
             style=Pack(flex=1),
         )
+
+        try:
+            self.paths.config.mkdir(exist_ok=True)
+        except FileNotFoundError:
+            print(f"Path: {self.paths.config} can't be created.")
+        try:
+            with open(self.paths.config / "done.csv", newline="") as csvfile:
+                reader = csv.DictReader(csvfile)
+                headings = reader.fieldnames
+                self.done = []
+                for row in reader:
+                    self.done.append(row)
+                
+                # Only store done tasks of current week
+                try:
+                    if self.done[0]['week'] != self.this_week_number:
+                        self.done = []
+                        self.write_done()
+                except IndexError:
+                    pass
+
+        except FileNotFoundError:
+            print(f"file not found at {self.paths.config}, creating new file...")
+            # Create empty done file
+            with open(self.paths.config / "done.csv", "w", newline="") as csvfile:
+                headings = ["week", "task"]
+                self.done = []
+                writer = csv.DictWriter(csvfile, fieldnames=headings)
+                writer.writeheader()
+        print(self.done)
+
         self.determine_tasks()
 
     def determine_tasks(self):
@@ -229,28 +266,53 @@ class Skrop(toga.App):
         for row in self.all_tasks.data:
             if self.check_task(row.begin, row.frequency):
                 self.task_details.data.append({"subtitle": row.task})
+                
 
-    def mark_task_done(self, widget, row):
+    # def mark_task_done(self, widget, row):
+    def mark_task_done(self, widget):
         """Handler to add Done! to the title of the detailedlist
 
         And set icon to Skrop logo.
-    
-        Args:
-            widget (): toga widget
-            row (): current selection in the detailedlist
-        """
-        row.title = "Done!"
-        row.icon = toga.Icon("resources/skrop")
-
-    def remove_done(sec, widget, row):
-        """Handler to remove Done! and Skrop logo from detailedlist.    
 
         Args:
             widget (): toga widget
             row (): current selection in the detailedlist
         """
-        row.title = None
-        row.icon = None
+
+        # row.title = "Done!"
+        # row.icon = toga.Icon("resources/skrop")
+
+        self.task_details.selection.title = "Done!"
+        self.task_details.selection.icon = toga.Icon("resources/skrop")
+
+        # done_task = dict(week=self.this_week_number, task=row.subtitle)
+        done_task = dict(week=self.this_week_number, task=self.task_details.selection.subtitle)
+        self.done.append(done_task)
+        self.write_done()
+
+    # def remove_done(self, widget, row):
+    def remove_done(self, widget):
+        """Handler to remove Done! and Skrop logo from detailedlist.
+
+        Args:
+            widget (): toga widget
+            row (): current selection in the detailedlist
+        """
+        # row.title = None
+        # row.icon = None
+        
+        # dict(week=str(self.this_week_number), task=row.subtitle)
+        remove_task = dict(week=str(self.this_week_number), task=self.task_details.selection.subtitle)
+        self.done.remove(remove_task)
+        self.write_done()
+
+    def write_done(self):
+        with open(self.paths.config / "done.csv", "w", newline="") as csvfile:
+            headings = ["week", "task"]
+            writer = csv.DictWriter(csvfile, fieldnames=headings)
+            writer.writeheader()
+            for row in self.done:
+                writer.writerow(row)
 
     def write_data(self):
         """Save all tasks to csv file"""
